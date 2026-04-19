@@ -8,7 +8,6 @@
     * { margin: 0; padding: 0; }
     body { overflow: hidden; }
     .no-cursor { cursor: none !important; }
-    /* 初始遮罩层（伪装同意协议） */
     .overlay {
       position: fixed;
       top: 0; left: 0;
@@ -26,13 +25,11 @@
       margin-top: 20px;
       padding: 16px 32px;
       font-size: 18px;
-      cursor: pointer;
       background: #007fff;
       color: #fff;
       border: none;
       border-radius: 8px;
     }
-    /* 整蛊层（鬼脸+音效） */
     .scare-container {
       position: fixed;
       top: 0; left: 0;
@@ -43,86 +40,35 @@
     .scare-container img {
       width: 100%;
       height: 100%;
-      object-fit: cover; /* 全屏铺满，不拉伸 */
+      object-fit: cover;
     }
   </style>
 </head>
-<body oncontextmenu="return false;"&gt;
-  <!-- 初始伪装层 -->
+<body>
   <div id="overlay" class="overlay">
     <p>请点击下方按钮，同意服务协议以继续访问</p>
     <button id="start-btn">同意并继续</button>
-  &lt;/div&gt;
-  <!-- 整蛊核心层 -->
+  </div>
+
   <div id="scare-container" class="scare-container">
     <img src="scare.jpg" alt="整蛊图片">
-    <audio id="scare-audio" src="scare.mp3" preload="auto"></audio>
+    <audio id="scare-audio" src="scare.mp3"></audio>
   </div>
 
   <script>
-    // 获取页面元素
     const overlay = document.getElementById('overlay');
     const scareContainer = document.getElementById('scare-container');
     const startBtn = document.getElementById('start-btn');
     const audio = document.getElementById('scare-audio');
 
-    // 1. 快捷键拦截（针对Win键、ESC等逃生键）
-    document.addEventListener('keydown', function(e) {
-      // 拦截Win键（左/右）
-      if (e.key === 'Meta' || e.keyCode === 91 || e.keyCode === 92) {
-        e.preventDefault();
-        e.stopPropagation();
-        return false;
-      }
-      // 拦截ESC、F11、F5、Tab等逃生键
-      const blockedKeys = ['Escape', 'F11', 'F5', 'Tab'];
-      if (blockedKeys.includes(e.key) || (e.altKey && e.key === 'Tab')) {
-        e.preventDefault();
-        e.stopPropagation();
-        return false;
-      }
-      // 后门快捷键（自己可退出：Ctrl+Shift+Q）
-      if (e.ctrlKey && e.shiftKey && e.key === 'Q') {
-        document.exitFullscreen();
-        document.body.classList.remove('no-cursor');
-        scareContainer.style.display = 'none';
-        overlay.classList.remove('hidden');
-      }
-    }, { capture: true, passive: false });
-
-    // 2. 全屏触发逻辑
-    function tryFullScreen() {
-      const el = document.documentElement;
-      const rfs = el.requestFullscreen || el.webkitRequestFullScreen || el.mozRequestFullScreen || el.msRequestFullscreen;
-      if (rfs) rfs.call(el).catch(() => {});
-    }
-    // 退出全屏自动恢复
-    document.addEventListener('fullscreenchange', () => {
-      if (!document.fullscreenElement) {
-        tryFullScreen();
-        document.body.classList.add('no-cursor');
-      }
-    });
-
-    // 3. 点击按钮触发整蛊
     startBtn.addEventListener('click', () => {
-      overlay.classList.add('hidden'); // 隐藏伪装层
-      scareContainer.style.display = 'block'; // 显示鬼脸
-      document.body.classList.add('no-cursor'); // 隐藏鼠标
-      tryFullScreen(); // 强制全屏
-      // 播放音效（可选，没有音效可删除这行）
-      audio.play().catch(() => {
-        audio.muted = false;
-        audio.play();
-      });
-      // 高频轮询，防止切出
-      setInterval(() => {
-        if (!document.fullscreenElement) tryFullScreen();
-      }, 100);
-    });
+      overlay.classList.add('hidden');
+      scareContainer.style.display = 'block';
+      audio.play().catch(()=>{});
 
-    // 4. 阻止关闭页面
-    window.onbeforeunload = () => "确定离开吗？";
+      const el = document.documentElement;
+      if (el.requestFullscreen) el.requestFullscreen();
+    });
   </script>
 </body>
 </html>
