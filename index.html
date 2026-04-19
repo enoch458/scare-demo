@@ -2,40 +2,72 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <title>整蛊练习</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>前端整蛊练习demo</title>
   <style>
-    body{margin:0;padding:0;overflow:hidden;background:white;}
-    .btn-area{width:100vw;height:100vh;display:flex;align-items:center;justify-content:center;}
-    #btn{padding:20px 40px;font-size:18px;background:#007fff;color:white;border:none;border-radius:8px;cursor:pointer;}
-    #scare{display:none;width:100vw;height:100vh;position:fixed;top:0;left:0;}
-    #scare img{width:100%;height:100%;object-fit:cover;}
+    * { margin: 0; padding: 0; }
+    body { overflow: hidden; }
+    .overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background: #fff;
+      z-index: 999999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+    .overlay.hidden { display: none; }
+    #start-btn {
+      margin-top: 20px;
+      padding: 16px 32px;
+      font-size: 18px;
+      background: #007fff;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      cursor:pointer;
+    }
+    .scare-container {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      z-index: 9999999;
+      display: none;
+    }
+    .scare-container img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
   </style>
 </head>
 <body>
 
-<div class="btn-area">
-  <button id="btn">同意协议并继续</button>
-</div>
+  <div id="overlay" class="overlay">
+    <p>请点击下方按钮，同意服务协议以继续访问</p>
+    <button id="start-btn">同意并继续</button>
+  </div>
 
-<div id="scare">
-  <img src="scare.jpg">
-  <audio id="audio" src="scare.mp3"></audio>
-</div>
+  <div id="scare-container" class="scare-container">
+    <img src="scare.jpg" alt="整蛊图片">
+    <audio id="scare-audio" src="scare.mp3"></audio>
+  </div>
 
-<script>
-const btn = document.getElementById('btn');
-const scare = document.getElementById('scare');
-const audio = document.getElementById('audio');
+  <script>
+    const overlay = document.getElementById('overlay');
+    const scareContainer = document.getElementById('scare-container');
+    const startBtn = document.getElementById('start-btn');
+    const audio = document.getElementById('scare-audio');
 
-btn.addEventListener('click', function(){
-  document.querySelector('.btn-area').style.display = 'none';
-  scare.style.display = 'block';
-  audio.play().catch(()=>{});
-  
-  try{
-    document.documentElement.requestFullscreen();
-  }catch(e){}
-});
-</script>
+    startBtn.addEventListener('click', () => {
+      overlay.classList.add('hidden');
+      scareContainer.style.display = 'block';
+      audio.play().catch(()=>{});
+      try{document.documentElement.requestFullscreen()}catch(e){}
+    });
+  </script>
 </body>
 </html>
